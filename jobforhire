@@ -29,8 +29,8 @@ contract labour{
         
     }
     
-       function selectjob(uint index, uint security, address employer)public{
-           employer = workdetails[index].employer;
+       function selectjob(uint index, uint security)public payable{
+          address employer = workdetails[index].employer;
            require(msg.value >= security);
             details storage detail = workdetails[index];
             require(security > detail.pay);
@@ -53,8 +53,10 @@ contract labour{
            require(!workdetails[index].paymentdone);
            require(workingfor[msg.sender] == workdetails[index].employer);
            msg.sender.transfer(workdetails[index].pay);
+           workdetails[index].paymentdone = true;
            
            
        }
        
        }
+    
