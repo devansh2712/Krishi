@@ -1,0 +1,60 @@
+pragma solidity ^0.4.17;
+
+contract labour{
+    struct details{
+        address employer;
+        string description;
+        uint pay;
+        bool complete;
+        bool accepted;
+        bool paymentdone;
+        mapping(address => bool) employee;
+    }
+    details[] public workdetails;
+    mapping(address => address)workingfor;
+   
+    
+    function hire(string description, uint pay) public payable {
+        require(msg.value >= pay);
+        details memory newworkdetails = details({
+            employer: msg.sender,
+            description: description,
+            pay: pay,
+            complete: false, 
+            accepted: false,
+            paymentdone: false
+           
+        });
+        workdetails.push(newworkdetails);
+        
+    }
+    
+       function selectjob(uint index, uint security, address employer)public{
+           employer = workdetails[index].employer;
+           require(msg.value >= security);
+            details storage detail = workdetails[index];
+            require(security > detail.pay);
+            detail.employee[msg.sender] = true;
+            detail.accepted = true;
+            workingfor[msg.sender] = employer;
+            
+            
+            
+       }
+       function workapproved(uint index) public{
+           require(msg.sender == workdetails[index].employer);
+           require(!workdetails[index].complete);
+           
+           workdetails[index].complete = true;
+       }
+       function workdone(uint index) public {
+           
+           require(workdetails[index].complete);
+           require(!workdetails[index].paymentdone);
+           require(workingfor[msg.sender] == workdetails[index].employer);
+           msg.sender.transfer(workdetails[index].pay);
+           
+           
+       }
+       
+       }
