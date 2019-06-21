@@ -1,0 +1,24 @@
+ function forlease(string description, uint rateperhour)public{  
+        
+        
+        details memory  newequipmentdetails = details({
+            owner: msg.sender,
+            typeofequipment: description,
+            rateperhour: rateperhour,
+            usefinish: false, 
+            rented: false,
+            paymentdone: false
+           
+        });
+        equipmentdetails.push(newequipmentdetails);
+    }
+    function rent(uint index)public{
+        equipmentdetails[index].hiredby = true;
+        hiredfrom[msg.sender] = equipmentdetails[index].owner;
+    }
+     function workdone(uint index)public{
+         
+     }    
+        
+    
+}
