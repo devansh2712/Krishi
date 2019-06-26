@@ -1,4 +1,23 @@
- function forlease(string description, uint rateperhour)public{  
+ pragma solidity ^0.4.17;
+
+contract equipment{
+    struct details{
+        address owner;
+        string typeofequipment;
+        uint rateperhour;
+        bool usefinish;
+        bool rented;
+        bool paymentdone;
+        bool paymentrecieved;
+        uint pay;
+        mapping(address => bool) hiredby;
+        address Hiredby;
+        uint timeused;
+    }
+    details[] public equipmentdetails;
+    mapping(address => address) hiredfrom;
+    
+    function forlease(string description, uint rateperhour)public{  
         
         
         details memory  newequipmentdetails = details({
@@ -7,18 +26,39 @@
             rateperhour: rateperhour,
             usefinish: false, 
             rented: false,
-            paymentdone: false
+            paymentdone: false,
+            paymentrecieved: false,
+            pay: 0,
+            Hiredby: msg.sender,
+            timeused: 0
            
         });
         equipmentdetails.push(newequipmentdetails);
     }
     function rent(uint index)public{
-        equipmentdetails[index].hiredby = true;
-        hiredfrom[msg.sender] = equipmentdetails[index].owner;
+        equipmentdetails[index].Hiredby = msg.sender;
+        equipmentdetails[index].hiredby[msg.sender] = true;
+        equipmentdetails[index].rented = true;
     }
-     function workdone(uint index)public{
-         
-     }    
+    function usefinish(uint index, uint timeused) public payable{
+        equipmentdetails[index].timeused = timeused;
+        equipmentdetails[index].pay = timeused* equipmentdetails[index].rateperhour;
+        require(msg.value >=  equipmentdetails[index].pay);
+        equipmentdetails[index].paymentdone = true;
+        equipmentdetails[index].usefinish = true;
+    }
+    function  finishdeal(uint index, uint timeused) public payable{
+        require(msg.sender == equipmentdetails[index].owner);
+        require(equipmentdetails[index].timeused == timeused);
+        msg.sender.transfer(equipmentdetails[index].pay);
+         equipmentdetails[index].paymentrecieved = true;
+        
+        
+        
+        
+    } 
+    
         
     
-}
+        
+    }
